@@ -1,0 +1,7 @@
+{
+  "core": null,
+  "plugins": [
+    ".",
+    "https://downloads.wordpress.org/plugin/loco-translate.2.8.0.zip"
+  ]
+}
