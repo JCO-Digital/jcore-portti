@@ -14,15 +14,71 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Get the currently active portal content for a specific slot.
  *
+ * Tracks position in the item stack between calls on the same page load,
+ * returning the next $limit items each time. If $rotate is true, wraps
+ * around to the beginning when running out of items.
+ *
  * @param string $slot_slug The slug of the portal slot taxonomy term.
  * @param int    $limit     Maximum number of items to return (default 1).
+ * @param bool   $rotate    Whether to rotate back to start when exhausted (default false).
  * @return \WP_Post[]|null  The matching post object(s) or null if none found.
  */
-function get_active_portal_content( $slot_slug, $limit = 1 ) {
+function get_active_portal_content( $slot_slug, $limit = 1, $rotate = false ) {
+	static $slot_positions = array();
+	static $slot_stacks    = array();
+
 	if ( empty( $slot_slug ) ) {
 		return null;
 	}
 
+	// Cache the item stack per slot to avoid re-querying.
+	if ( ! isset( $slot_stacks[ $slot_slug ] ) ) {
+		$slot_stacks[ $slot_slug ]    = get_item_stack( $slot_slug );
+		$slot_positions[ $slot_slug ] = 0;
+	}
+
+	$matches = $slot_stacks[ $slot_slug ];
+
+	if ( empty( $matches ) ) {
+		return null;
+	}
+
+	$total_items = count( $matches );
+	$position    = $slot_positions[ $slot_slug ];
+
+	// If we've exhausted all items and rotation is disabled, return null.
+	if ( $position >= $total_items && ! $rotate ) {
+		return null;
+	}
+
+	// Return array of posts up to the limit.
+	$results = array();
+	for ( $i = 0; $i < $limit; $i++ ) {
+		// Calculate the actual index, wrapping if rotation is enabled.
+		if ( $rotate ) {
+			$index = ( $position + $i ) % $total_items;
+		} else {
+			$index = $position + $i;
+			if ( $index >= $total_items ) {
+				break;
+			}
+		}
+		$results[] = $matches[ $index ]['post'];
+	}
+
+	// Update the position for the next call.
+	$slot_positions[ $slot_slug ] = $position + $limit;
+
+	return $results;
+}
+
+/**
+ * Get all matching portal items for a specific slot, filtered by date and context.
+ *
+ * @param string $slot_slug The slug of the portal slot taxonomy term.
+ * @return array[] Array of match data arrays.
+ */
+function get_item_stack( $slot_slug ) {
 	$now = current_time( 'mysql' );
 
 	$args = array(
@@ -82,7 +138,7 @@ function get_active_portal_content( $slot_slug, $limit = 1 ) {
 	$query = new \WP_Query( $args );
 
 	if ( ! $query->have_posts() ) {
-		return null;
+		return array();
 	}
 
 	$current_path    = untrailingslashit( wp_parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ) );
@@ -118,10 +174,6 @@ function get_active_portal_content( $slot_slug, $limit = 1 ) {
 		}
 	}
 
-	if ( empty( $matches ) ) {
-		return null;
-	}
-
 	// Sort by specificity (selected post > route path), then by priority (desc), then by date (desc).
 	usort(
 		$matches,
@@ -142,15 +194,9 @@ function get_active_portal_content( $slot_slug, $limit = 1 ) {
 		}
 	);
 
-	// Return array of posts up to the limit.
-	$results = array();
-	$count   = min( $limit, count( $matches ) );
-	for ( $i = 0; $i < $count; $i++ ) {
-		$results[] = $matches[ $i ]['post'];
-	}
-
-	return $results;
+	return $matches;
 }
+
 
 /**
  * Matches a current path against a route pattern (supporting wildcards).
