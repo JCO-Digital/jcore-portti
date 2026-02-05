@@ -10,6 +10,13 @@ const path = require('path');
 function extendSharedConfig(config) {
 	return {
 		...config,
+		entry: {
+			...config.entry(),
+			'campaign-content-sidebar/index': path.resolve(
+				__dirname,
+				'src/campaign-content-sidebar/index.js'
+			),
+		},
 		resolve: {
 			alias: {
 				media$: path.resolve(
@@ -54,12 +61,8 @@ module.exports = (() => {
 	if (Array.isArray(wordpressConfig)) {
 		const [scriptConfig, moduleConfig] = wordpressConfig;
 
-		const extendedScriptConfig = extendSharedConfig(
-			extendScriptConfig(scriptConfig)
-		);
-		const extendedModuleConfig = extendSharedConfig(
-			extendModuleConfig(moduleConfig)
-		);
+		const extendedScriptConfig = extendSharedConfig(extendScriptConfig(scriptConfig));
+		const extendedModuleConfig = extendSharedConfig(extendModuleConfig(moduleConfig));
 
 		return [extendedScriptConfig, extendedModuleConfig];
 	} else {
