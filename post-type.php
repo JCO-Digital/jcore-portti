@@ -99,28 +99,28 @@ add_action(
 	'init',
 	function () {
 		$meta_fields = array(
-			'_jcore_portti_start_date' => array(
+			'_jcore_portti_start_date'    => array(
 				'type'              => 'string',
 				'description'       => __( 'Start Date', 'jcore-portti' ),
 				'single'            => true,
 				'show_in_rest'      => true,
 				'sanitize_callback' => 'sanitize_text_field',
 			),
-			'_jcore_portti_end_date'   => array(
+			'_jcore_portti_end_date'      => array(
 				'type'              => 'string',
 				'description'       => __( 'End Date', 'jcore-portti' ),
 				'single'            => true,
 				'show_in_rest'      => true,
 				'sanitize_callback' => 'sanitize_text_field',
 			),
-			'_jcore_portti_route_path' => array(
+			'_jcore_portti_route_path'    => array(
 				'type'              => 'string',
 				'description'       => __( 'Route Path', 'jcore-portti' ),
 				'single'            => true,
 				'show_in_rest'      => true,
 				'sanitize_callback' => 'sanitize_text_field',
 			),
-			'_jcore_portti_priority'   => array(
+			'_jcore_portti_priority'      => array(
 				'type'              => 'string',
 				'description'       => __( 'Priority', 'jcore-portti' ),
 				'single'            => true,
@@ -129,6 +129,14 @@ add_action(
 				'sanitize_callback' => function ( $value ) {
 					return in_array( $value, array( 'low', 'medium', 'high' ), true ) ? $value : 'medium';
 				},
+			),
+			'_jcore_portti_selected_post' => array(
+				'type'              => 'integer',
+				'description'       => __( 'Selected Page/Post', 'jcore-portti' ),
+				'single'            => true,
+				'show_in_rest'      => true,
+				'default'           => 0,
+				'sanitize_callback' => 'absint',
 			),
 		);
 

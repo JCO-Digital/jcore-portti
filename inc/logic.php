@@ -85,21 +85,35 @@ function get_active_portal_content( $slot_slug, $limit = 1 ) {
 		return null;
 	}
 
-	$current_path = untrailingslashit( wp_parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ) );
-	$matches      = array();
+	$current_path    = untrailingslashit( wp_parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ) );
+	$current_post_id = get_queried_object_id();
+	$matches         = array();
 
 	foreach ( $query->posts as $post ) {
-		$route_path = get_post_meta( $post->ID, '_jcore_portti_route_path', true );
-		$priority   = get_post_meta( $post->ID, '_jcore_portti_priority', true );
+		$selected_post_id = (int) get_post_meta( $post->ID, '_jcore_portti_selected_post', true );
+		$route_path       = get_post_meta( $post->ID, '_jcore_portti_route_path', true );
+		$priority         = get_post_meta( $post->ID, '_jcore_portti_priority', true );
+
 		if ( empty( $priority ) ) {
 			$priority = 'medium';
 		}
 
-		if ( match_route( $current_path, $route_path ) ) {
+		$is_match = false;
+
+		// If a specific post/page is selected, check if we're on that post/page.
+		if ( $selected_post_id > 0 ) {
+			$is_match = ( $current_post_id === $selected_post_id );
+		} else {
+			// Otherwise, use route path matching.
+			$is_match = match_route( $current_path, $route_path );
+		}
+
+		if ( $is_match ) {
 			$matches[] = array(
-				'post'     => $post,
-				'priority' => get_priority_score( $priority ),
-				'date'     => get_the_date( 'U', $post->ID ),
+				'post'             => $post,
+				'priority'         => get_priority_score( $priority ),
+				'date'             => get_the_date( 'U', $post->ID ),
+				'selected_post_id' => $selected_post_id,
 			);
 		}
 	}
@@ -108,13 +122,22 @@ function get_active_portal_content( $slot_slug, $limit = 1 ) {
 		return null;
 	}
 
-	// Sort by priority (desc), then by date (desc).
+	// Sort by specificity (selected post > route path), then by priority (desc), then by date (desc).
 	usort(
 		$matches,
 		function ( $a, $b ) {
+			// Selected post matches are more specific than route matches.
+			$a_specificity = $a['selected_post_id'] > 0 ? 1 : 0;
+			$b_specificity = $b['selected_post_id'] > 0 ? 1 : 0;
+
+			if ( $a_specificity !== $b_specificity ) {
+				return $b_specificity - $a_specificity;
+			}
+
 			if ( $a['priority'] !== $b['priority'] ) {
 				return $b['priority'] - $a['priority'];
 			}
+
 			return $b['date'] - $a['date'];
 		}
 	);
