@@ -8,12 +8,13 @@
 	"icon": "share-alt",
 	"description": "",
 	"attributes": {
-		"termIds": {
-			"type": "array",
-			"default": [],
-			"items": {
-				"type": "number"
-			}
+		"slotId": {
+			"type": "string",
+			"default": ""
+		},
+		"previewPostId": {
+			"type": "number",
+			"default": 0
 		}
 	},
 	"example": {},
