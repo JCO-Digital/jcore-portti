@@ -21,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+define( 'JCORE_PORTTI_PLUGIN_FILE', __FILE__ );
 define( 'JCORE_PORTTI_BUILD_DIR', __DIR__ . '/build' );
 define( 'JCORE_PORTTI_MANIFEST', JCORE_PORTTI_BUILD_DIR . '/blocks-manifest.php' );
 define( 'JCORE_PORTTI_POST_TYPE', 'jcore-portal-content' );
@@ -28,6 +29,7 @@ define( 'JCORE_PORTTI_POST_TAXONOMY', 'jcore-portal-slot' );
 
 require_once __DIR__ . '/post-type.php';
 require_once __DIR__ . '/inc/logic.php';
+require_once __DIR__ . '/inc/activation.php';
 
 /**
  * Let Jcore know we are loaded.
@@ -39,7 +41,6 @@ add_filter(
 		return $plugins;
 	}
 );
-
 
 /**
  * Registers the block using a `blocks-manifest.php` file, which improves the performance of block type registration.
