@@ -123,6 +123,7 @@ function get_active_portal_content( $slot_slug ) {
  *
  * @param string $current_path The current path to match against.
  * @param string $pattern The route pattern to match.
+ * @return bool True if the path matches the pattern, false otherwise.
  */
 function match_route( $current_path, $pattern ) {
 	if ( empty( $pattern ) ) {
@@ -142,6 +143,9 @@ function match_route( $current_path, $pattern ) {
 
 /**
  * Converts priority string to numeric score.
+ *
+ * @param string $priority The priority string.
+ * @return int The numeric score.
  */
 function get_priority_score( $priority ) {
 	return match ( $priority ) {
