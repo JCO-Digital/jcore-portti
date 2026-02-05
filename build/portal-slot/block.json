@@ -15,6 +15,10 @@
     "maxItems": {
       "type": "number",
       "default": 1
+    },
+    "rotate": {
+      "type": "boolean",
+      "default": false
     }
   },
   "example": {},

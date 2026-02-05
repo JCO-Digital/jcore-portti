@@ -18,6 +18,10 @@ return array(
 			'maxItems' => array(
 				'type' => 'number',
 				'default' => 1
+			),
+			'rotate' => array(
+				'type' => 'boolean',
+				'default' => false
 			)
 		),
 		'example' => array(
