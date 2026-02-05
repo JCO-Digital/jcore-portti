@@ -1,11 +1,11 @@
 name: Label Pull Request
 
 on:
-  pull_request_target:
-    types: [opened, edited]
+    pull_request_target:
+        types: [opened, edited]
 
 jobs:
-  label:
-    permissions:
-      pull-requests: write
-    uses: jco-digital/jcore-module-actions/.github/workflows/label.yml@v2
+    label:
+        permissions:
+            pull-requests: write
+        uses: jco-digital/jcore-module-actions/.github/workflows/label.yml@v2
