@@ -50,7 +50,7 @@ add_action(
 				),
 				'public'           => false,
 				'show_ui'          => true,
-				'supports'         => array( 'title', 'editor', 'revisions', 'show_in_rest' ),
+				'supports'         => array( 'title', 'editor', 'revisions', 'custom-fields' ),
 				'show_in_rest'     => true,
 				'menu_icon'        => 'dashicons-share-alt',
 				'rewrite'          => false,
@@ -87,10 +87,91 @@ add_action(
 				'show_in_menu'      => true,
 				'show_in_nav_menus' => false,
 				'show_admin_column' => true,
-				'hierarchical'      => true,
+				'hierarchical'      => false,
 				'show_in_rest'      => true,
 				'rewrite'           => false,
 			)
+		);
+	}
+);
+
+add_action(
+	'init',
+	function () {
+		$meta_fields = array(
+			'_jcore_portti_start_date'    => array(
+				'type'              => 'string',
+				'description'       => __( 'Start Date', 'jcore-portti' ),
+				'single'            => true,
+				'show_in_rest'      => true,
+				'sanitize_callback' => 'sanitize_text_field',
+			),
+			'_jcore_portti_end_date'      => array(
+				'type'              => 'string',
+				'description'       => __( 'End Date', 'jcore-portti' ),
+				'single'            => true,
+				'show_in_rest'      => true,
+				'sanitize_callback' => 'sanitize_text_field',
+			),
+			'_jcore_portti_route_path'    => array(
+				'type'              => 'string',
+				'description'       => __( 'Route Path', 'jcore-portti' ),
+				'single'            => true,
+				'show_in_rest'      => true,
+				'sanitize_callback' => 'sanitize_text_field',
+			),
+			'_jcore_portti_priority'      => array(
+				'type'              => 'string',
+				'description'       => __( 'Priority', 'jcore-portti' ),
+				'single'            => true,
+				'show_in_rest'      => true,
+				'default'           => 'medium',
+				'sanitize_callback' => function ( $value ) {
+					return in_array( $value, array( 'low', 'medium', 'high' ), true ) ? $value : 'medium';
+				},
+			),
+			'_jcore_portti_selected_post' => array(
+				'type'              => 'integer',
+				'description'       => __( 'Selected Page/Post', 'jcore-portti' ),
+				'single'            => true,
+				'show_in_rest'      => true,
+				'default'           => 0,
+				'sanitize_callback' => 'absint',
+			),
+		);
+
+		foreach ( $meta_fields as $meta_key => $args ) {
+			if ( ! isset( $args['auth_callback'] ) ) {
+				$args['auth_callback'] = function ( $allowed, $meta_key, $object_id ) {
+					return current_user_can( 'edit_post', $object_id );
+				};
+			}
+
+			register_post_meta( JCORE_PORTTI_POST_TYPE, $meta_key, $args );
+		}
+	}
+);
+
+add_action(
+	'enqueue_block_editor_assets',
+	function () {
+		$screen = get_current_screen();
+		if ( ! $screen || JCORE_PORTTI_POST_TYPE !== $screen->post_type ) {
+			return;
+		}
+
+		$asset_file = JCORE_PORTTI_BUILD_DIR . '/campaign-content-sidebar/index.asset.php';
+		if ( ! file_exists( $asset_file ) ) {
+			return;
+		}
+
+		$asset = require $asset_file;
+		wp_enqueue_script(
+			'jcore-portti-campaign-sidebar',
+			plugin_dir_url( __FILE__ ) . 'build/campaign-content-sidebar/index.js',
+			$asset['dependencies'],
+			$asset['version'],
+			true
 		);
 	}
 );

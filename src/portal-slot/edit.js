@@ -1,6 +1,17 @@
 import { __ } from "@wordpress/i18n";
-import { InspectorControls, useBlockProps } from "@wordpress/block-editor";
-import { PanelBody, FormTokenField } from "@wordpress/components";
+import {
+	InspectorControls,
+	useBlockProps,
+	InnerBlocks,
+	InspectorAdvancedControls,
+} from "@wordpress/block-editor";
+import {
+	PanelBody,
+	SelectControl,
+	ExternalLink,
+	Placeholder,
+	__experimentalNumberControl as NumberControl,
+} from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
 import { store as coreStore } from "@wordpress/core-data";
 import ServerSideRender from "@wordpress/server-side-render";
@@ -10,10 +21,13 @@ import "./editor.scss";
  * The edit function describes the structure of your block in the context of the
  * editor. This represents what the editor will render when the block is used.
  *
+ * @param {Object}   props               The edit props.
+ * @param {Object}   props.attributes    The block attributes.
+ * @param {Function} props.setAttributes The function to set attributes.
  * @return {Element} Element to render.
  */
 export default function Edit({ attributes, setAttributes }) {
-	const { termIds = [] } = attributes;
+	const { slotId, maxItems } = attributes;
 
 	// Fetch all terms from jcore-portal-slot taxonomy
 	const { terms, hasResolved } = useSelect((select) => {
@@ -29,56 +43,91 @@ export default function Edit({ attributes, setAttributes }) {
 		};
 	}, []);
 
-	// Create a mapping of term names to IDs
-	const termNameToId = {};
-	const termIdToName = {};
-	terms.forEach((term) => {
-		termNameToId[term.name] = term.id;
-		termIdToName[term.id] = term.name;
-	});
+	const slotOptions = [
+		{ label: __("Select a slot...", "jcore-portti"), value: "" },
+		...terms.map((term) => ({
+			label: term.name,
+			value: term.slug,
+		})),
+	];
 
-	// Get selected term names for display
-	const selectedTermNames = termIds
-		.map((termId) => termIdToName[termId] || "")
-		.filter(Boolean);
+	const manageSlotsUrl =
+		"/wp-admin/edit-tags.php?taxonomy=jcore-portal-slot&post_type=jcore-portal-content";
 
-	// Get available term suggestions
-	const suggestions = terms.map((term) => term.name);
-
-	// Handle term selection changes
-	const handleTermsChange = (newTermNames) => {
-		const newTermIds = newTermNames
-			.map((name) => termNameToId[name])
-			.filter(Boolean);
-		setAttributes({ termIds: newTermIds });
-	};
-
-	return (
+	const inspectorControls = (
 		<>
 			<InspectorControls>
 				<PanelBody title={__("Settings", "jcore-portti")}>
-					<FormTokenField
-						label={__("Select Portal Slot Terms", "jcore-portti")}
-						value={selectedTermNames}
-						suggestions={suggestions}
-						onChange={handleTermsChange}
-						maxSuggestions={20}
-						__experimentalShowHowTo={false}
-						__nextHasNoMarginBottom
+					<SelectControl
+						label={__("Portal Slot", "jcore-portti")}
+						value={slotId}
+						options={slotOptions}
+						onChange={(value) => setAttributes({ slotId: value })}
 						help={__(
-							"Select one or more portal slot terms to display a random post from those categories.",
+							"Choose the slot location for this block.",
 							"jcore-portti",
 						)}
 					/>
+					<ExternalLink href={manageSlotsUrl}>
+						{__("Manage Portal Slots", "jcore-portti")}
+					</ExternalLink>
 				</PanelBody>
 			</InspectorControls>
+			<InspectorAdvancedControls>
+				<NumberControl
+					label={__("Max number of items", "jcore-portti")}
+					value={maxItems}
+					onChange={(value) =>
+						setAttributes({
+							maxItems: parseInt(value, 10) || 1,
+						})
+					}
+					min={1}
+					help={__(
+						"Maximum number of campaign items to display.",
+						"jcore-portti",
+					)}
+				/>
+			</InspectorAdvancedControls>
+		</>
+	);
 
+	if (!slotId) {
+		return (
 			<div {...useBlockProps()}>
-				<ServerSideRender
-					block="jco/portal-slot"
-					attributes={{ ...attributes, preview: true }}
+				{inspectorControls}
+				<Placeholder
+					icon="share-alt"
+					label={__("Portal Slot", "jcore-portti")}
+					instructions={__(
+						"Select a portal slot in the sidebar to display campaign content.",
+						"jcore-portti",
+					)}
 				/>
 			</div>
-		</>
+		);
+	}
+
+	return (
+		<div {...useBlockProps()}>
+			{inspectorControls}
+			<ServerSideRender block="jco/portal-slot" attributes={attributes} />
+			<div className="jcore-portal-slot-fallback-editor">
+				<hr />
+				<p
+					style={{
+						fontSize: "11px",
+						opacity: 0.7,
+						marginBottom: "10px",
+					}}
+				>
+					{__(
+						"Fallback Content (Shown if no active campaign matches):",
+						"jcore-portti",
+					)}
+				</p>
+				<InnerBlocks />
+			</div>
+		</div>
 	);
 }
