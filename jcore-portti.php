@@ -27,6 +27,7 @@ define( 'JCORE_PORTTI_POST_TYPE', 'jcore-portal-content' );
 define( 'JCORE_PORTTI_POST_TAXONOMY', 'jcore-portal-slot' );
 
 require_once __DIR__ . '/post-type.php';
+require_once __DIR__ . '/inc/logic.php';
 
 /**
  * Let Jcore know we are loaded.
