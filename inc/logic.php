@@ -120,6 +120,9 @@ function get_active_portal_content( $slot_slug ) {
 
 /**
  * Matches a current path against a route pattern (supporting wildcards).
+ *
+ * @param string $current_path The current path to match against.
+ * @param string $pattern The route pattern to match.
  */
 function match_route( $current_path, $pattern ) {
 	if ( empty( $pattern ) ) {
