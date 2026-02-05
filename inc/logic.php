@@ -15,9 +15,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Get the currently active portal content for a specific slot.
  *
  * @param string $slot_slug The slug of the portal slot taxonomy term.
- * @return \WP_Post|null The matching post object or null if none found.
+ * @param int    $limit     Maximum number of items to return (default 1).
+ * @return \WP_Post[]|null  The matching post object(s) or null if none found.
  */
-function get_active_portal_content( $slot_slug ) {
+function get_active_portal_content( $slot_slug, $limit = 1 ) {
 	if ( empty( $slot_slug ) ) {
 		return null;
 	}
@@ -89,7 +90,10 @@ function get_active_portal_content( $slot_slug ) {
 
 	foreach ( $query->posts as $post ) {
 		$route_path = get_post_meta( $post->ID, '_jcore_portti_route_path', true );
-		$priority   = get_post_meta( $post->ID, '_jcore_portti_priority', true ) ?: 'medium';
+		$priority   = get_post_meta( $post->ID, '_jcore_portti_priority', true );
+		if ( empty( $priority ) ) {
+			$priority = 'medium';
+		}
 
 		if ( match_route( $current_path, $route_path ) ) {
 			$matches[] = array(
@@ -115,7 +119,14 @@ function get_active_portal_content( $slot_slug ) {
 		}
 	);
 
-	return $matches[0]['post'];
+	// Return array of posts up to the limit.
+	$results = array();
+	$count   = min( $limit, count( $matches ) );
+	for ( $i = 0; $i < $count; $i++ ) {
+		$results[] = $matches[ $i ]['post'];
+	}
+
+	return $results;
 }
 
 /**
@@ -130,8 +141,10 @@ function match_route( $current_path, $pattern ) {
 		return true; // Empty matches everything.
 	}
 
-	$pattern      = untrailingslashit( $pattern );
-	$current_path = $current_path ?: '/';
+	$pattern = untrailingslashit( $pattern );
+	if ( empty( $current_path ) ) {
+		$current_path = '/'; // Default to root path.
+	}
 
 	if ( str_ends_with( $pattern, '*' ) ) {
 		$base = rtrim( $pattern, '*' );
