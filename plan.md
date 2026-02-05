@@ -15,15 +15,15 @@ The `portal-slot` block serves as a placeholder where dynamic campaign content w
 
 - A dropdown or combobox to select from existing "Portal Slots" (taxonomy terms).
 - A link to manage Portal Slots in the admin.
-- Preview mode: Option to select a specific "Campaign Content" to preview how it looks in the slot.
+- Max number of items in advanced tab.
 
 ### Frontend Rendering (`render.php`)
 
 1. Determine current page path.
 2. Query `jcore-portal-content` items assigned to the selected `slotId`.
 3. Filter results based on:
-    - **Date**: Current time must be between `start_date` and `end_date`.
-    - **Path**: Match the `route_path` against the current request URI (supporting wildcards or exact matches).
+   - **Date**: Current time must be between `start_date` and `end_date`.
+   - **Path**: Match the `route_path` against the current request URI (supporting wildcards or exact matches).
 4. Sort by **Priority** (High > Medium > Low) and then by **Date** (Newest first).
 5. Output the content of the top-matching post.
 
@@ -41,7 +41,8 @@ The following fields should be implemented using a Metabox (or registered in RES
 
 - **Start Date** (`_jcore_portti_start_date`): ISO datetime string.
 - **End Date** (`_jcore_portti_end_date`): ISO datetime string.
-- **Route Path** (`_jcore_portti_route_path`): String (e.g., `/products/*` or `/shop`).
+- **Selected Page/Post** (`_jcore_portti_selected_post`): Select field for selecting a specific page or post to show on.
+- **Route Path** (`_jcore_portti_route_path`): String (e.g., `/products/*` or `/shop`). Only visible if \_jcore_portti_selected_post is not selected.
 - **Priority** (`_jcore_portti_priority`): Select field with values `high`, `medium`, `low`. Default: `medium`.
 
 ## Logic & Implementation Details
@@ -51,7 +52,7 @@ The following fields should be implemented using a Metabox (or registered in RES
 The selection logic should be encapsulated in a helper class or function to ensure consistency:
 
 ```php
-function get_active_portal_content( $slot_slug ) {
+function get_active_portal_content( $slot_slug, $limit = 1 ) {
     // 1. WP_Query for jcore-portal-content with the specific taxonomy term.
     // 2. Filter by meta_query for date range (if set).
     // 3. Post-processing to match the route_path.
