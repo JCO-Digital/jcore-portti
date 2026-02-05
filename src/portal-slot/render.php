@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $slot_id   = $attributes['slotId'] ?? '';
 $max_items = $attributes['maxItems'] ?? 1;
+$rotate    = $attributes['rotate'] ?? false;
 
 if ( empty( $slot_id ) ) {
 	if ( is_admin() ) {
@@ -23,7 +24,7 @@ if ( empty( $slot_id ) ) {
 	return;
 }
 
-$active_posts = get_active_portal_content( $slot_id, $max_items );
+$active_posts = get_active_portal_content( $slot_id, $max_items, $rotate );
 
 if ( ! empty( $active_posts ) ) {
 	foreach ( $active_posts as $active_post ) {

@@ -10,6 +10,7 @@ import {
 	SelectControl,
 	ExternalLink,
 	Placeholder,
+	ToggleControl,
 	__experimentalNumberControl as NumberControl,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
@@ -27,7 +28,7 @@ import "./editor.scss";
  * @return {Element} Element to render.
  */
 export default function Edit({ attributes, setAttributes }) {
-	const { slotId, maxItems } = attributes;
+	const { slotId, maxItems, rotate } = attributes;
 
 	// Fetch all terms from jcore-portal-slot taxonomy
 	const { terms, hasResolved } = useSelect((select) => {
@@ -85,6 +86,15 @@ export default function Edit({ attributes, setAttributes }) {
 					min={1}
 					help={__(
 						"Maximum number of campaign items to display.",
+						"jcore-portti",
+					)}
+				/>
+				<ToggleControl
+					label={__("Rotate items", "jcore-portti")}
+					checked={rotate}
+					onChange={(value) => setAttributes({ rotate: value })}
+					help={__(
+						"When enabled, items will rotate back to the start when running out of items in the stack.",
 						"jcore-portti",
 					)}
 				/>
