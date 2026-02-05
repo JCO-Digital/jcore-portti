@@ -11,8 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-$slot_id         = $attributes['slotId'] ?? '';
-$preview_post_id = $attributes['previewPostId'] ?? 0;
+$slot_id   = $attributes['slotId'] ?? '';
+$max_items = $attributes['maxItems'] ?? 1;
 
 if ( empty( $slot_id ) ) {
 	if ( is_admin() ) {
@@ -23,22 +23,19 @@ if ( empty( $slot_id ) ) {
 	return;
 }
 
-$active_post = null;
-if ( is_admin() && $preview_post_id > 0 ) {
-	$active_post = get_post( $preview_post_id );
-}
+$active_posts = get_active_portal_content( $slot_id, $max_items );
 
-if ( ! $active_post ) {
-	$active_post = get_active_portal_content( $slot_id );
-}
-
-if ( $active_post ) {
-	$portal_content = apply_filters( 'the_content', $active_post->post_content );
-	?>
-	<div class="jcore-portal-slot jcore-portal-slot--<?php echo esc_attr( $slot_id ); ?>" data-portal-id="<?php echo esc_attr( $active_post->ID ); ?>">
-		<?php echo $portal_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-	</div>
-	<?php
+if ( ! empty( $active_posts ) ) {
+	foreach ( $active_posts as $active_post ) {
+		$portal_content = apply_filters( 'the_content', $active_post->post_content );
+		printf(
+			'<div class="jcore-portal-slot jcore-portal-slot--%s" data-portal-id="%s">',
+			esc_attr( $slot_id ),
+			esc_attr( $active_post->ID )
+		);
+		echo $portal_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo '</div>';
+	}
 } else {
 	if ( ! empty( $content ) ) {
 		echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
