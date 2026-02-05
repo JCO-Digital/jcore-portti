@@ -1,4 +1,14 @@
-# 0.2.0 (2026-02-05)
+# [0.3.0](https://github.com/JCO-Digital/jcore-portti/compare/v0.2.0...v0.3.0) (2026-02-05)
+
+
+### Features
+
+* **logic:** add rotation and paging to get_active_portal_content ([d5ea646](https://github.com/JCO-Digital/jcore-portti/commit/d5ea646da5e6c8ecee2ff07ad7b16baea9435dba))
+* **portal-slot:** add rotate option to allow items to loop when stack ([aa4f49c](https://github.com/JCO-Digital/jcore-portti/commit/aa4f49c1f73cd1f37f98d780c7f954873cf78fd8))
+
+
+
+# [0.2.0](https://github.com/JCO-Digital/jcore-portti/compare/0d8ca67136e0f1a96b6525f501890d8a5937f7d9...v0.2.0) (2026-02-05)
 
 
 ### Bug Fixes
