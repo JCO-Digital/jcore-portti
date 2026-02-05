@@ -1,10 +1,10 @@
-import { __ } from "@wordpress/i18n";
-import { InspectorControls, useBlockProps } from "@wordpress/block-editor";
-import { PanelBody, FormTokenField } from "@wordpress/components";
-import { useSelect } from "@wordpress/data";
-import { store as coreStore } from "@wordpress/core-data";
-import ServerSideRender from "@wordpress/server-side-render";
-import "./editor.scss";
+import { __ } from '@wordpress/i18n';
+import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
+import { PanelBody, FormTokenField } from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
+import { store as coreStore } from '@wordpress/core-data';
+import ServerSideRender from '@wordpress/server-side-render';
+import './editor.scss';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -20,10 +20,10 @@ export default function Edit({ attributes, setAttributes }) {
 		const { getEntityRecords, hasFinishedResolution } = select(coreStore);
 		const query = { per_page: -1 };
 		return {
-			terms: getEntityRecords("taxonomy", "jcore-portal-slot", query) || [],
-			hasResolved: hasFinishedResolution("getEntityRecords", [
-				"taxonomy",
-				"jcore-portal-slot",
+			terms: getEntityRecords('taxonomy', 'jcore-portal-slot', query) || [],
+			hasResolved: hasFinishedResolution('getEntityRecords', [
+				'taxonomy',
+				'jcore-portal-slot',
 				query,
 			]),
 		};
@@ -38,27 +38,23 @@ export default function Edit({ attributes, setAttributes }) {
 	});
 
 	// Get selected term names for display
-	const selectedTermNames = termIds
-		.map((termId) => termIdToName[termId] || "")
-		.filter(Boolean);
+	const selectedTermNames = termIds.map((termId) => termIdToName[termId] || '').filter(Boolean);
 
 	// Get available term suggestions
 	const suggestions = terms.map((term) => term.name);
 
 	// Handle term selection changes
 	const handleTermsChange = (newTermNames) => {
-		const newTermIds = newTermNames
-			.map((name) => termNameToId[name])
-			.filter(Boolean);
+		const newTermIds = newTermNames.map((name) => termNameToId[name]).filter(Boolean);
 		setAttributes({ termIds: newTermIds });
 	};
 
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={__("Settings", "jcore-portti")}>
+				<PanelBody title={__('Settings', 'jcore-portti')}>
 					<FormTokenField
-						label={__("Select Portal Slot Terms", "jcore-portti")}
+						label={__('Select Portal Slot Terms', 'jcore-portti')}
 						value={selectedTermNames}
 						suggestions={suggestions}
 						onChange={handleTermsChange}
@@ -66,8 +62,8 @@ export default function Edit({ attributes, setAttributes }) {
 						__experimentalShowHowTo={false}
 						__nextHasNoMarginBottom
 						help={__(
-							"Select one or more portal slot terms to display a random post from those categories.",
-							"jcore-portti",
+							'Select one or more portal slot terms to display a random post from those categories.',
+							'jcore-portti'
 						)}
 					/>
 				</PanelBody>
