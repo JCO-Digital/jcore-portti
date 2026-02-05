@@ -87,7 +87,7 @@ add_action(
 				'show_in_menu'      => true,
 				'show_in_nav_menus' => false,
 				'show_admin_column' => true,
-				'hierarchical'      => true,
+				'hierarchical'      => false,
 				'show_in_rest'      => true,
 				'rewrite'           => false,
 			)
