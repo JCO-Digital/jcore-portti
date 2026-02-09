@@ -24,7 +24,13 @@ if ( empty( $slot_id ) ) {
 	return;
 }
 
-$active_posts = get_active_portal_content( $slot_id, $max_items, $rotate );
+$active_posts = get_active_portal_content(
+	$slot_id,
+	array(
+		'limit'  => $max_items,
+		'rotate' => $rotate,
+	)
+);
 
 if ( ! empty( $active_posts ) ) {
 	foreach ( $active_posts as $active_post ) {

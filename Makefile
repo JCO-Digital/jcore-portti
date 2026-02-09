@@ -1,4 +1,4 @@
-.PHONY: all dev ci ci-install install build watch clean
+.PHONY: all dev ci ci-install install build watch start stop clean
 
 all: install build
 
@@ -16,6 +16,12 @@ build:
 
 watch:
 	pnpm run watch
+
+start:
+	pnpm run env:start
+
+stop:
+	pnpm run env:stop
 
 clean:
 	rm -rf node_modules

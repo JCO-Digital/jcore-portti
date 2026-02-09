@@ -19,11 +19,17 @@ if ( ! defined( 'ABSPATH' ) ) {
  * around to the beginning when running out of items.
  *
  * @param string $slot_slug The slug of the portal slot taxonomy term.
- * @param int    $limit     Maximum number of items to return (default 1).
- * @param bool   $rotate    Whether to rotate back to start when exhausted (default false).
+ * @param array  $options {
+ *     Optional. Array of options.
+ *
+ *     @type int    $limit   Maximum number of items to return. Default 1.
+ *     @type bool   $rotate  Whether to rotate back to start when exhausted. Default false.
+ *     @type int    $post_id The post ID to match against. Default is current queried object ID.
+ *     @type string $path    The path to match against. Default is current request path.
+ * }
  * @return \WP_Post[]|null  The matching post object(s) or null if none found.
  */
-function get_active_portal_content( $slot_slug, $limit = 1, $rotate = false ) {
+function get_active_portal_content( $slot_slug, $options = array() ) {
 	static $slot_positions = array();
 	static $slot_stacks    = array();
 
@@ -31,31 +37,52 @@ function get_active_portal_content( $slot_slug, $limit = 1, $rotate = false ) {
 		return null;
 	}
 
+	$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '/';
+
+	$args = wp_parse_args(
+		$options,
+		array(
+			'limit'   => 1,
+			'rotate'  => false,
+			'post_id' => get_queried_object_id(),
+			'path'    => untrailingslashit( wp_parse_url( $request_uri ?: '/', PHP_URL_PATH ) ),
+		)
+	);
+
+	// Normalize path so that root is consistently represented and distinct from null.
+	$normalized_path = $args['path'];
+	if ( '' === $normalized_path ) {
+		$normalized_path = '/';
+	}
+	$args['path'] = $normalized_path;
+
+	// Build a cache key that encodes types to avoid collisions between null and ''.
+	$cache_key = md5( wp_json_encode( array( $slot_slug, (int) $args['post_id'], $args['path'] ) ) );
 	// Cache the item stack per slot to avoid re-querying.
-	if ( ! isset( $slot_stacks[ $slot_slug ] ) ) {
-		$slot_stacks[ $slot_slug ]    = get_item_stack( $slot_slug );
-		$slot_positions[ $slot_slug ] = 0;
+	if ( ! isset( $slot_stacks[ $cache_key ] ) ) {
+		$slot_stacks[ $cache_key ]    = get_item_stack( $slot_slug, $args['post_id'], $args['path'] );
+		$slot_positions[ $cache_key ] = 0;
 	}
 
-	$matches = $slot_stacks[ $slot_slug ];
+	$matches = $slot_stacks[ $cache_key ];
 
 	if ( empty( $matches ) ) {
 		return null;
 	}
 
 	$total_items = count( $matches );
-	$position    = $slot_positions[ $slot_slug ];
+	$position    = $slot_positions[ $cache_key ];
 
 	// If we've exhausted all items and rotation is disabled, return null.
-	if ( $position >= $total_items && ! $rotate ) {
+	if ( $position >= $total_items && ! $args['rotate'] ) {
 		return null;
 	}
 
 	// Return array of posts up to the limit.
 	$results = array();
-	for ( $i = 0; $i < $limit; $i++ ) {
+	for ( $i = 0; $i < $args['limit']; $i++ ) {
 		// Calculate the actual index, wrapping if rotation is enabled.
-		if ( $rotate ) {
+		if ( $args['rotate'] ) {
 			$index = ( $position + $i ) % $total_items;
 		} else {
 			$index = $position + $i;
@@ -67,7 +94,7 @@ function get_active_portal_content( $slot_slug, $limit = 1, $rotate = false ) {
 	}
 
 	// Update the position for the next call.
-	$slot_positions[ $slot_slug ] = $position + $limit;
+	$slot_positions[ $cache_key ] = $position + $args['limit'];
 
 	return $results;
 }
@@ -75,10 +102,12 @@ function get_active_portal_content( $slot_slug, $limit = 1, $rotate = false ) {
 /**
  * Get all matching portal items for a specific slot, filtered by date and context.
  *
- * @param string $slot_slug The slug of the portal slot taxonomy term.
+ * @param string      $slot_slug The slug of the portal slot taxonomy term.
+ * @param int|null    $post_id   Optional. The post ID to match against.
+ * @param string|null $path      Optional. The path to match against.
  * @return array[] Array of match data arrays.
  */
-function get_item_stack( $slot_slug ) {
+function get_item_stack( $slot_slug, $post_id = null, $path = null ) {
 	$now = current_time( 'mysql' );
 
 	$args = array(
@@ -141,9 +170,7 @@ function get_item_stack( $slot_slug ) {
 		return array();
 	}
 
-	$current_path    = untrailingslashit( wp_parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ) );
-	$current_post_id = get_queried_object_id();
-	$matches         = array();
+	$matches = array();
 
 	foreach ( $query->posts as $post ) {
 		$selected_post_id = (int) get_post_meta( $post->ID, '_jcore_portti_selected_post', true );
@@ -158,10 +185,10 @@ function get_item_stack( $slot_slug ) {
 
 		// If a specific post/page is selected, check if we're on that post/page.
 		if ( $selected_post_id > 0 ) {
-			$is_match = ( $current_post_id === $selected_post_id );
+			$is_match = ( null === $post_id || $post_id === $selected_post_id );
 		} else {
 			// Otherwise, use route path matching.
-			$is_match = match_route( $current_path, $route_path );
+			$is_match = ( null === $path || match_route( $path, $route_path ) );
 		}
 
 		if ( $is_match ) {
@@ -196,7 +223,6 @@ function get_item_stack( $slot_slug ) {
 
 	return $matches;
 }
-
 
 /**
  * Matches a current path against a route pattern (supporting wildcards).
