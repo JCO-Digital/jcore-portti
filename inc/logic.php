@@ -161,12 +161,6 @@ function get_item_stack( $slot_slug, $post_id = null, $path = null ) {
 		return array();
 	}
 
-	if ( null === $path ) {
-		$path = untrailingslashit( wp_parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ) );
-	}
-	if ( null === $post_id ) {
-		$post_id = get_queried_object_id();
-	}
 	$matches = array();
 
 	foreach ( $query->posts as $post ) {
@@ -182,10 +176,10 @@ function get_item_stack( $slot_slug, $post_id = null, $path = null ) {
 
 		// If a specific post/page is selected, check if we're on that post/page.
 		if ( $selected_post_id > 0 ) {
-			$is_match = ( $post_id === $selected_post_id );
+			$is_match = ( null === $post_id || $post_id === $selected_post_id );
 		} else {
 			// Otherwise, use route path matching.
-			$is_match = match_route( $path, $route_path );
+			$is_match = ( null === $path || match_route( $path, $route_path ) );
 		}
 
 		if ( $is_match ) {
