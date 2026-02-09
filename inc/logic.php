@@ -37,13 +37,15 @@ function get_active_portal_content( $slot_slug, $options = array() ) {
 		return null;
 	}
 
+	$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '/';
+
 	$args = wp_parse_args(
 		$options,
 		array(
 			'limit'   => 1,
 			'rotate'  => false,
 			'post_id' => get_queried_object_id(),
-			'path'    => untrailingslashit( wp_parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ) ),
+			'path'    => untrailingslashit( wp_parse_url( $request_uri ?: '/', PHP_URL_PATH ) ),
 		)
 	);
 
