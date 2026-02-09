@@ -47,8 +47,15 @@ function get_active_portal_content( $slot_slug, $options = array() ) {
 		)
 	);
 
-	$cache_key = md5( $slot_slug . '|' . $args['post_id'] . '|' . $args['path'] );
+	// Normalize path so that root is consistently represented and distinct from null.
+	$normalized_path = $args['path'];
+	if ( '' === $normalized_path ) {
+		$normalized_path = '/';
+	}
+	$args['path'] = $normalized_path;
 
+	// Build a cache key that encodes types to avoid collisions between null and ''.
+	$cache_key = md5( wp_json_encode( array( $slot_slug, (int) $args['post_id'], $args['path'] ) ) );
 	// Cache the item stack per slot to avoid re-querying.
 	if ( ! isset( $slot_stacks[ $cache_key ] ) ) {
 		$slot_stacks[ $cache_key ]    = get_item_stack( $slot_slug, $args['post_id'], $args['path'] );
