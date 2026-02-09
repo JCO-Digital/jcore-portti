@@ -1,3 +1,13 @@
+## [0.3.1](https://github.com/JCO-Digital/jcore-portti/compare/v0.3.0...v0.3.1) (2026-02-09)
+
+
+### Bug Fixes
+
+* **logic:** Add better slash handling to paths. ([c1e4a70](https://github.com/JCO-Digital/jcore-portti/commit/c1e4a70fbc4470f8433fcf24d73a4be3e0cda7c8))
+* normalize path and hash from json values ([51300c6](https://github.com/JCO-Digital/jcore-portti/commit/51300c6969794c437d83ddf4b005fd11f6330476))
+
+
+
 # [0.3.0](https://github.com/JCO-Digital/jcore-portti/compare/v0.2.0...v0.3.0) (2026-02-05)
 
 
