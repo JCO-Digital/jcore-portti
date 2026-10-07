@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<ruleset name="JCORE Portti">
+	<description>WordPress coding standards for the JCORE Portti plugin.</description>
+
+	<arg name="extensions" value="php"/>
+	<arg name="colors"/>
+	<arg value="ps"/>
+
+	<file>.</file>
+
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/build/*</exclude-pattern>
+	<exclude-pattern>*/release/*</exclude-pattern>
+
+	<config name="testVersion" value="8.2-"/>
+	<config name="minimum_wp_version" value="6.7"/>
+
+	<rule ref="PHPCompatibilityWP"/>
+
+	<rule ref="WordPress-Docs"/>
+	<rule ref="WordPress-Extra">
+		<exclude name="WordPress.PHP.YodaConditions"/>
+	</rule>
+	<rule ref="Generic.CodeAnalysis.AssignmentInCondition">
+		<exclude name="Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition"/>
+	</rule>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="jcore-portti"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="jcore_portti"/>
+				<element value="JCORE_PORTTI"/>
+				<element value="Jcore\Portti"/>
+			</property>
+		</properties>
+		<!-- Block render templates run inside the render callback, so their variables are local. -->
+		<exclude-pattern>*/render.php</exclude-pattern>
+	</rule>
+</ruleset>

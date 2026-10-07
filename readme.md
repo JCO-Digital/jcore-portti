@@ -71,18 +71,44 @@ The plugin uses a modern build process:
 - The blocks are built using `@wordpress/scripts`.
 - Production builds generate a `blocks-manifest.php` for efficient registration.
 
-#### Build Commands
+- `build/` is not committed. It is built in CI and shipped in the release zip.
+
+#### Getting started
+
+Requires Node 22+, [pnpm](https://pnpm.io/) and [Composer](https://getcomposer.org/). [WP-CLI](https://wp-cli.org/) is only needed for the translation scripts.
 
 ```bash
-# Install dependencies
 pnpm install
-
-# Development build with watch
-pnpm start
-
-# Production build
+composer install
 pnpm build
 ```
+
+Then run a throwaway WordPress with the plugin mounted:
+
+```bash
+pnpm playground
+```
+
+This serves [WordPress Playground](https://wordpress.org/playground/) on <http://localhost:8883> from `.wp/blueprint.json`, logged in as `admin` / `password`.
+
+#### Scripts
+
+| Command                                  | What it does                                              |
+| ---------------------------------------- | --------------------------------------------------------- |
+| `pnpm build`                             | Build the blocks and editor sidebar into `build/`.        |
+| `pnpm start`                             | Same, in watch mode.                                      |
+| `pnpm check`                             | Everything CI lints: ESLint, Stylelint and PHPCS.         |
+| `pnpm lint:js` / `lint:css` / `lint:php` | One linter at a time.                                     |
+| `pnpm format`                            | Format `src/` with `wp-scripts format`.                   |
+| `composer lint:fix`                      | Fix what PHPCBF can fix.                                  |
+| `pnpm i18n`                              | Regenerate the POT, the MO files and the JS translations. |
+| `pnpm playground`                        | Serve the plugin in WordPress Playground.                 |
+
+A `Makefile` wraps the same scripts. `make ci` is the entry point the shared publish workflow calls.
+
+#### Releases
+
+Merging to `main` runs `.github/workflows/release.yml`. It lints and builds, then [foonver](https://github.com/foonly/foonver) bumps the version from the conventional commit messages, syncs it into `jcore-portti.php` and updates `CHANGELOG.md`. The reusable publish workflow from [jcore-update](https://github.com/JCO-Digital/jcore-update) builds the zip, creates the GitHub release, notifies the update API and pushes to the dist repository. Installed sites pick up new versions through the bundled jcore-update client.
 
 ### License
 

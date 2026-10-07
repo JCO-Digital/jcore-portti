@@ -2,29 +2,38 @@
   "name": "jcore-portti",
   "version": "0.3.1",
   "description": "A portal block for use in campaigns and other temporary or changing content.",
-  "author": "J&Co Digital <support@jco.fi>",
+  "author": "J&Co Digital Oy <support@jco.fi>",
   "license": "GPL-2.0-or-later",
-  "main": "build/index.js",
+  "private": true,
   "scripts": {
     "build": "wp-scripts build --blocks-manifest",
-    "format": "wp-scripts format",
-    "lint:css": "wp-scripts lint-style",
-    "lint:js": "wp-scripts lint-js",
-    "packages-update": "wp-scripts packages-update",
-    "plugin-zip": "wp-scripts plugin-zip",
     "start": "wp-scripts start --blocks-manifest",
-    "watch": "concurrently -c red --names ' portti' 'pnpm start'",
-    "env:start": "pnpm dlx @wordpress/env start",
-    "env:stop": "pnpm dlx @wordpress/env stop",
-    "make-pot": "pnpm dlx @wp-blocks/make-pot@1.6.3 . languages/",
-    "make-json": "pnpm --package='@wp-blocks/make-pot@1.6.3' makejson build/ languages/"
+    "format": "wp-scripts format src",
+    "lint:js": "wp-scripts lint-js src",
+    "lint:css": "wp-scripts lint-style \"src/**/*.scss\"",
+    "lint:php": "composer lint",
+    "check": "pnpm lint:js && pnpm lint:css && pnpm lint:php",
+    "packages-update": "wp-scripts packages-update",
+    "i18n": "pnpm make-pot && pnpm make-mo && pnpm make-json",
+    "make-pot": "wp i18n make-pot . languages/jcore-portti.pot --domain=jcore-portti --slug=jcore-portti --exclude=vendor,node_modules,src,release,.wp",
+    "make-mo": "wp i18n make-mo languages languages",
+    "make-json": "pnpm dlx --package=\"@wp-blocks/make-pot@1.6.3\" makejson build/ languages/",
+    "playground": "wp-playground-cli server --blueprint=.wp/blueprint.json --mount=.:/wordpress/wp-content/plugins/jcore-portti --php=8.2 --port=8883"
   },
   "devDependencies": {
-    "@wordpress/scripts": "^30.15.0",
-    "concurrently": "^9.1.2"
+    "@wordpress/scripts": "^30.27.0",
+    "@wp-playground/cli": "^3.1.54"
   },
   "dependencies": {
     "@jcodigital/jcore-media": "^1.0.0"
   },
-  "packageManager": "pnpm@10.11.0+sha512.6540583f41cc5f628eb3d9773ecee802f4f9ef9923cc45b69890fb47991d4b092964694ec3a4f738a420c918a333062c8b925d312f42e4f0c263eb603551f977"
+  "packageManager": "pnpm@10.11.0+sha512.6540583f41cc5f628eb3d9773ecee802f4f9ef9923cc45b69890fb47991d4b092964694ec3a4f738a420c918a333062c8b925d312f42e4f0c263eb603551f977",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JCO-Digital/jcore-portti.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JCO-Digital/jcore-portti/issues"
+  },
+  "homepage": "https://github.com/JCO-Digital/jcore-portti#readme"
 }

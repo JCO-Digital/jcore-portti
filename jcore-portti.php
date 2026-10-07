@@ -1,9 +1,11 @@
 <?php
 /**
  * Plugin Name:       JCORE Portti
+ * Plugin URI:        https://github.com/JCO-Digital/jcore-portti
  * Description:       A portal block for use in campaigns or other changing content.
- * Version: 0.3.1
+ * Version:           0.3.1
  * Requires at least: 6.7
+ * Tested up to:      7.1
  * Requires PHP:      8.2
  * Author:            J&Co Digital
  * Author URI:        https://jco.fi
@@ -17,8 +19,18 @@
 
 namespace Jcore\Portti;
 
+use Jcore\Update\Config\UpdateConfig;
+use Jcore\Update\Hooks\PluginUpdateHooks;
+use Jcore\Update\Support\PluginHelper;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
+}
+
+// The update library is vendored into the release, but a source checkout has
+// no vendor directory until `composer install` has run.
+if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
+	require_once __DIR__ . '/vendor/autoload.php';
 }
 
 define( 'JCORE_PORTTI_PLUGIN_FILE', __FILE__ );
@@ -41,6 +53,19 @@ add_filter(
 		return $plugins;
 	}
 );
+
+/**
+ * Registers automatic updates through the J&Co Digital update service.
+ */
+if ( class_exists( UpdateConfig::class ) ) {
+	$jcore_portti_update_config = new UpdateConfig(
+		pluginFile: JCORE_PORTTI_PLUGIN_FILE,
+		slug: 'jcore-portti',
+		version: PluginHelper::getVersion( JCORE_PORTTI_PLUGIN_FILE ),
+		apiBaseUrl: 'https://update.jcore.fi/v1',
+	);
+	( new PluginUpdateHooks( $jcore_portti_update_config ) )->register();
+}
 
 /**
  * Registers the block using a `blocks-manifest.php` file, which improves the performance of block type registration.
