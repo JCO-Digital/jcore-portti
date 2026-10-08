@@ -3,7 +3,7 @@
  * Plugin Name:       JCORE Portti
  * Plugin URI:        https://github.com/JCO-Digital/jcore-portti
  * Description:       A portal block for use in campaigns or other changing content.
- * Version:           0.3.1
+ * Version:           0.3.2
  * Requires at least: 6.7
  * Tested up to:      7.1
  * Requires PHP:      8.2

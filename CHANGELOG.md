@@ -1,45 +1,95 @@
-## [0.3.1](https://github.com/JCO-Digital/jcore-portti/compare/v0.3.0...v0.3.1) (2026-02-09)
+# Changelog
 
+### 0.3.2 (2026-10-08)
 
-### Bug Fixes
+#### Bug Fixes
 
-* **logic:** Add better slash handling to paths. ([c1e4a70](https://github.com/JCO-Digital/jcore-portti/commit/c1e4a70fbc4470f8433fcf24d73a4be3e0cda7c8))
-* normalize path and hash from json values ([51300c6](https://github.com/JCO-Digital/jcore-portti/commit/51300c6969794c437d83ddf4b005fd11f6330476))
+- logic: remove fallback for empty request uri in path parsing (ff0c889)
+- use the plugin text domain and call block hooks unconditionally (ea3e55b)
 
+#### Maintenance
 
+- align tooling and release pipeline with jcore-turva (3255a45)
 
-# [0.3.0](https://github.com/JCO-Digital/jcore-portti/compare/v0.2.0...v0.3.0) (2026-02-05)
+### v0.3.1 (2026-02-09)
 
+#### Bug Fixes
 
-### Features
+- logic: Add better slash handling to paths. (c1e4a70)
+- normalize path and hash from json values (51300c6)
 
-* **logic:** add rotation and paging to get_active_portal_content ([d5ea646](https://github.com/JCO-Digital/jcore-portti/commit/d5ea646da5e6c8ecee2ff07ad7b16baea9435dba))
-* **portal-slot:** add rotate option to allow items to loop when stack ([aa4f49c](https://github.com/JCO-Digital/jcore-portti/commit/aa4f49c1f73cd1f37f98d780c7f954873cf78fd8))
+#### Refactor
 
+- portal: update matching logic and content retrieval signature (ab7f759)
+- logic: use options array for get_active_portal_content (f042a2f)
 
+#### Build System
 
-# [0.2.0](https://github.com/JCO-Digital/jcore-portti/compare/0d8ca67136e0f1a96b6525f501890d8a5937f7d9...v0.2.0) (2026-02-05)
+- makefile: add start and stop targets (6d65b05)
 
+## v0.3.0 (2026-02-05)
 
-### Bug Fixes
+#### Features
 
-* **editor:** update PluginDocumentSettingPanel import path ([707acfa](https://github.com/JCO-Digital/jcore-portti/commit/707acfa0bd5633e3cf0b9dfa02039022c574b35e))
-* **portal-slot:** enable saving of inner blocks in portal-slot block ([c1abedf](https://github.com/JCO-Digital/jcore-portti/commit/c1abedf0e65a67bd5c4ff9e41e7929d5c4acf663))
-* **post-type:** set hierarchical to false for custom post type ([36fd905](https://github.com/JCO-Digital/jcore-portti/commit/36fd9056891bc8620f5905cfbe47aec16216d5a0))
+- portal-slot: add rotate option to allow items to loop when stack runs out (aa4f49c)
+- logic: add rotation and paging to get_active_portal_content (d5ea646)
 
+## v0.2.0 (2026-02-05)
 
-### Features
+#### Features
 
-* **activation:** add activation hook to create default portal slot on ([6ba902b](https://github.com/JCO-Digital/jcore-portti/commit/6ba902b2b754f1a6cb474ab2f6b8a9d41e418122))
-* **campaign:** Add toggle and date pickers for campaign dates ([ebca0e9](https://github.com/JCO-Digital/jcore-portti/commit/ebca0e99d56cce744d98ba3531f3bdb0014c9428))
-* **logic:** support returning multiple portal content items ([041fdd4](https://github.com/JCO-Digital/jcore-portti/commit/041fdd449ff71cdb6f7ddee9ddb96cfb66437d12))
-* **portal-slot:** add maxItems attribute to control item count ([07402c5](https://github.com/JCO-Digital/jcore-portti/commit/07402c593ebfa326b73f9b15f3ac4f5d50bc8142))
-* **portal-slot:** Improve editor preview functionality ([f10d403](https://github.com/JCO-Digital/jcore-portti/commit/f10d4034911a64711a6d5ceee91849c6001efd44))
-* **portal-slot:** Introduce slot and preview settings ([3c4c2cd](https://github.com/JCO-Digital/jcore-portti/commit/3c4c2cd68db0442c8287638f44cc188e882ad190))
-* **portti:** Add content selection logic ([8b08238](https://github.com/JCO-Digital/jcore-portti/commit/8b082382dbba48d5995795ed9ad50a2514e19a14))
-* **post-type:** Add campaign settings meta fields ([0d8ca67](https://github.com/JCO-Digital/jcore-portti/commit/0d8ca67136e0f1a96b6525f501890d8a5937f7d9))
-* **post-type:** Enable custom fields for portti post type ([c563033](https://github.com/JCO-Digital/jcore-portti/commit/c563033a4393d7b450adb7cd3bc907a5ba9e42c2))
-* **sidebar:** add option to target specific post or page ([de6405a](https://github.com/JCO-Digital/jcore-portti/commit/de6405aac09006a1492dde64482c3ef77bbe8935))
+- activation: add activation hook to create default portal slot on plugin activation (6ba902b)
+- sidebar: add option to target specific post or page (de6405a)
+- portal-slot: add maxItems attribute to control item count (07402c5)
+- logic: support returning multiple portal content items (041fdd4)
+- post-type: Enable custom fields for portti post type (c563033)
+- portal-slot: Improve editor preview functionality (f10d403)
+- campaign: Add toggle and date pickers for campaign dates (ebca0e9)
+- portti: Add content selection logic (8b08238)
+- portal-slot: Introduce slot and preview settings (3c4c2cd)
+- post-type: Add campaign settings meta fields (0d8ca67)
 
+#### Bug Fixes
 
+- portal-slot: enable saving of inner blocks in portal-slot block (c1abedf)
+- post-type: set hierarchical to false for custom post type registration (36fd905)
+- editor: update PluginDocumentSettingPanel import path (707acfa)
+
+#### Documentation
+
+- readme: expand plugin overview and usage instructions (fecb320)
+- plan: update portal slot plan with new fields and logic (ba7cf6d)
+- Add return types to function docblocks (834c035)
+- logic: Add docblock for match_route (6e3cff9)
+- Add JCORE Portti implementation plan (c3304d4)
+- Update readme with features and dev info (d43c21e)
+
+#### Styles
+
+- whitespace: Improve code formatting (0a0580c)
+- format .wp-env.json with consistent indentation (79fd622)
+- format: Update string literals to use single quotes (a03c2fe)
+
+#### Build System
+
+- composer: update wordpress-stubs to v6.9.1 (8ecca21)
+- webpack: Add campaign content sidebar entry point (8e3e7c4)
+- package: Remove experimental-modules flag (ed2dd25)
+
+#### Continuous Integration
+
+- workflows: fix indentation in GitHub Actions yaml files (2023efa)
+
+#### Maintenance
+
+- build artifacts need to be commited for build system to work. (0e9a18d)
+- scripts: remove version and postversion scripts from package.json (196f50a)
+- update pnpm lock (45e04fb)
+- cleanup: Remove unused portal slot block build files (276e86d)
+- gitignore: Add build directory (64d7c0c)
+
+#### Misc
+
+- First version of portal block. (a8f5f28)
+- Initial Commit (77bc278)
 
