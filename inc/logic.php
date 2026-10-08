@@ -45,7 +45,7 @@ function get_active_portal_content( $slot_slug, $options = array() ) {
 			'limit'   => 1,
 			'rotate'  => false,
 			'post_id' => get_queried_object_id(),
-			'path'    => untrailingslashit( wp_parse_url( $request_uri ?: '/', PHP_URL_PATH ) ),
+			'path'    => untrailingslashit( wp_parse_url( $request_uri, PHP_URL_PATH ) ),
 		)
 	);
 

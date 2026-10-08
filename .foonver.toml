@@ -1,0 +1,3 @@
+# package.json is foonver's own version file, so it is bumped without being listed.
+version-sync = ["jcore-portti.php"]
+changelog = true

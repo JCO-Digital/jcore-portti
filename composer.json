@@ -1,27 +1,32 @@
 {
 	"name": "jcodigital/jcore-portti",
-	"description": "JCORE Global Content plugin",
+	"description": "A portal block for use in campaigns and other temporary or changing content.",
 	"type": "wordpress-plugin",
-	"license": "GPL-2.0-only",
-	"autoload": {},
+	"license": "GPL-2.0-or-later",
 	"authors": [
 		{
-			"name": "JCO Digital",
+			"name": "J&Co Digital Oy",
 			"email": "support@jco.fi"
 		}
 	],
-	"require": {},
-	"config": {
-		"allow-plugins": {
-			"composer/installers": true,
-			"dealerdirect/phpcodesniffer-composer-installer": true
-		}
+	"require": {
+		"php": ">=8.2",
+		"jcodigital/jcore-update": "^1.2"
 	},
 	"require-dev": {
-		"php-stubs/wordpress-stubs": "^6.9",
-		"squizlabs/php_codesniffer": "^3.7",
 		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
-		"wp-coding-standards/wpcs": "^3.0.0",
-		"phpcsstandards/phpcsutils": "^1.0"
+		"php-stubs/wordpress-stubs": "^6.9",
+		"phpcompatibility/phpcompatibility-wp": "^2.1",
+		"wp-coding-standards/wpcs": "^3.1"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		},
+		"sort-packages": true
+	},
+	"scripts": {
+		"lint": "phpcs",
+		"lint:fix": "phpcbf"
 	}
 }

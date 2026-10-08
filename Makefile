@@ -1,28 +1,33 @@
-.PHONY: all dev ci ci-install install build watch start stop clean
+# Thin wrapper over the pnpm scripts. `make ci` is the entry point the shared
+# publish workflow in jcore-update calls; the rest are local shortcuts.
+
+.PHONY: all ci install build i18n check format start playground clean
 
 all: install build
 
-dev: install watch
-
 ci: install build
 
-ci-install: install
-
 install:
-	pnpm i
+	pnpm install
+	composer install --no-dev --no-interaction --prefer-dist
 
 build:
 	pnpm build
 
-watch:
-	pnpm run watch
+i18n:
+	pnpm i18n
+
+check:
+	pnpm check
+
+format:
+	pnpm format
 
 start:
-	pnpm run env:start
+	pnpm start
 
-stop:
-	pnpm run env:stop
+playground:
+	pnpm playground
 
 clean:
-	rm -rf node_modules
-	rm -rf build
+	rm -rf build node_modules release vendor
