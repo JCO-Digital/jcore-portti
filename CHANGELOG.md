@@ -1,6 +1,12 @@
 # Changelog
 
-### 0.3.2 (2026-10-08)
+### 0.3.3 (2026-11-02)
+
+#### Continuous Integration
+
+- release: keep publishing to the dist repo (9045a63)
+
+### v0.3.2 (2026-10-08)
 
 #### Bug Fixes
 
